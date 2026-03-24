@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="schedule.png">resources/schedule.png</file>
+    </qresource>
+</RCC>

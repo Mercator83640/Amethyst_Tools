@@ -1,0 +1,72 @@
+# --- Qt / qmake / QtCreator ---
+*.user
+*.pro.user*
+*.qbs.user*
+*.qmlc
+moc_*.cpp
+moc_*.h
+ui_*.h
+qrc_*.cpp
+*.autosave
+
+# --- Build folders ---
+ResultatBin/
+ImageDemo/
+build-*/
+*/build-*/
+**/build/**
+/dist/
+
+# packages/setup archives
+**/*.zip
+**/*.7z
+**/*.rar
+
+# (optionnel mais conseillé) dossiers setup lourds
+Setup/third_party/
+third_party/**/setup/
+
+# --- qmake generated / intermediates ---
+Makefile*
+*.o
+*.obj
+*.exp
+*.pch
+*.pdb
+*.ilk
+*.idb
+*.tlog
+*.log
+*.tmp
+*.cache
+*.depend
+*.prl
+*.sln
+*.vcxproj*
+*.filters
+*.ncb
+*.sdf
+*.opensdf
+.qmake.stash
+
+# --- Qt binaries / deploy ---
+*.exe
+*.dll
+# *.lib
+*.a
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# archives
+*.zip
+*.7z
+*.rar
+
+# vendor setup folders
+third_party/**/setup/
+third_party/**/setup_oasis/
+third_party/**/bin/
+# third_party/**/lib/
+third_party/**/_libs/

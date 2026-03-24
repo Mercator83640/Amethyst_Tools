@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>760</width><height>560</height></rect>
+  </property>
+  <property name="windowTitle">
+   <string>Microscope Simulator (UDP)</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QGroupBox" name="groupBoxCfg">
+      <property name="title"><string>Configuration réseau</string></property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0"><widget class="QLabel" name="labelPlatePort"><property name="text"><string>Écoute plaques (UDP)</string></property></widget></item>
+       <item row="0" column="1"><widget class="QSpinBox" name="spinPlatePort"><property name="minimum"><number>1</number></property><property name="maximum"><number>65535</number></property><property name="value"><number>10332</number></property></widget></item>
+       <item row="0" column="2"><widget class="QLabel" name="labelStatusPort"><property name="text"><string>Envoi status vers</string></property></widget></item>
+       <item row="0" column="3"><widget class="QLineEdit" name="editStatusHost"><property name="text"><string>127.0.0.1</string></property></widget></item>
+       <item row="0" column="4"><widget class="QSpinBox" name="spinStatusPort"><property name="minimum"><number>1</number></property><property name="maximum"><number>65535</number></property><property name="value"><number>12345</number></property></widget></item>
+       <item row="0" column="5"><widget class="QLabel" name="labelAckPort"><property name="text"><string>Écoute ACK (UDP)</string></property></widget></item>
+       <item row="0" column="6"><widget class="QSpinBox" name="spinAckPort"><property name="minimum"><number>1</number></property><property name="maximum"><number>65535</number></property><property name="value"><number>10333</number></property></widget></item>
+
+       <item row="1" column="0"><widget class="QLabel" name="labelBind"><property name="text"><string>Bind plaques</string></property></widget></item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QComboBox" name="comboBind">
+         <item><property name="text"><string>AnyIPv4 (recommandé)</string></property></item>
+         <item><property name="text"><string>LocalHost (127.0.0.1)</string></property></item>
+        </widget>
+       </item>
+       <item row="1" column="3" colspan="2">
+        <widget class="QCheckBox" name="checkPeriodic">
+         <property name="text"><string>Répéter l’envoi du status (UDP) toutes les</string></property>
+         <property name="checked"><bool>true</bool></property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QSpinBox" name="spinPeriodMs">
+         <property name="minimum"><number>50</number></property>
+         <property name="maximum"><number>5000</number></property>
+         <property name="value"><number>250</number></property>
+        </widget>
+       </item>
+       <item row="1" column="6"><widget class="QLabel" name="labelMs"><property name="text"><string>ms</string></property></widget></item>
+
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="btnStart">
+         <property name="text"><string>Démarrer</string></property>
+        </widget>
+       </item>
+       <item row="2" column="2" colspan="5">
+        <widget class="QLabel" name="labelRun">
+         <property name="text"><string>État : arrêté</string></property>
+         <property name="styleSheet"><string>QLabel{font-weight:600;}</string></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+
+    <item>
+     <widget class="QGroupBox" name="groupBoxPlate">
+      <property name="title"><string>Plaque reçue (depuis Schedule)</string></property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0"><widget class="QLabel" name="labelCB"><property name="text"><string>CB</string></property></widget></item>
+       <item row="0" column="1"><widget class="QLineEdit" name="editCB"><property name="readOnly"><bool>true</bool></property></widget></item>
+       <item row="0" column="2"><widget class="QLabel" name="labelDate"><property name="text"><string>Date</string></property></widget></item>
+       <item row="0" column="3"><widget class="QLineEdit" name="editDate"><property name="readOnly"><bool>true</bool></property></widget></item>
+       <item row="0" column="4"><widget class="QCheckBox" name="checkDual"><property name="text"><string>DualAnalysis</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+
+       <item row="1" column="0"><widget class="QLabel" name="labelStatus"><property name="text"><string>Status actuel</string></property></widget></item>
+       <item row="1" column="1"><widget class="QLabel" name="labelStatusValue"><property name="text"><string>FREE (0)</string></property><property name="styleSheet"><string>QLabel{font-weight:700;}</string></property></widget></item>
+
+       <item row="1" column="2"><widget class="QPushButton" name="btnFree"><property name="text"><string>FREE</string></property></widget></item>
+       <item row="1" column="3"><widget class="QPushButton" name="btnOccupied"><property name="text"><string>OCCUPIED</string></property></widget></item>
+       <item row="1" column="4"><widget class="QPushButton" name="btnRelease"><property name="text"><string>RELEASE</string></property></widget></item>
+
+       <item row="2" column="0" colspan="5">
+        <widget class="QLabel" name="labelHint">
+         <property name="text"><string>Règle : status par défaut FREE. Quand une plaque est reçue sur 10332, le simulateur passe automatiquement à OCCUPIED et envoie le status sur 12345. Cliquez RELEASE pour libérer la plaque (envoi status=2).</string></property>
+         <property name="wordWrap"><bool>true</bool></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+
+    <item>
+     <widget class="QGroupBox" name="groupBoxLog">
+      <property name="title"><string>Log</string></property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item><widget class="QPlainTextEdit" name="log"><property name="readOnly"><bool>true</bool></property></widget></item>
+      </layout>
+     </widget>
+    </item>
+
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
