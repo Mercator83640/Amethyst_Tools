@@ -526,7 +526,6 @@ QList<MotionStep> CytomatEngine::buildMvTs(int loc)
              m_state.actionCode = ACT_CLOSE_GATE;
          }}
     };
-
 }
 
 void CytomatEngine::setTransferOccupied(bool occupied)
