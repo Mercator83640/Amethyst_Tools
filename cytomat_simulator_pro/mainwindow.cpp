@@ -20,6 +20,7 @@
 #include <QTableWidgetItem>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -39,6 +40,12 @@ MainWindow::MainWindow(QWidget* parent)
     buildUi();
     populateLocationsTable();
     refreshPorts();
+
+    QSettings s("ADRETEK", "Cytomat_Simulator");
+    const bool ignoreTransferCheck = s.value("Simulation/IgnoreTransferCheckForMvTs", false).toBool();
+    m_chkIgnoreTransferCheckForMvTs->setChecked(ignoreTransferCheck);
+    m_engine.setIgnoreTransferChecksForMvTs(ignoreTransferCheck);
+
     updateFromState();
 
     connect(&m_engine, &CytomatEngine::stateChanged,
@@ -186,10 +193,12 @@ void MainWindow::buildUi()
     m_transferManualCheck = new QCheckBox("Occupied", this);
     m_loadTransferButton = new QPushButton("Load", this);
     m_clearTransferButton = new QPushButton("Clear", this);
+    m_chkIgnoreTransferCheckForMvTs = new QCheckBox(tr("Ignore transfer check for mv:ts (simulation)"), this);
 
     transferLayout->addWidget(m_transferManualCheck);
     transferLayout->addWidget(m_loadTransferButton);
     transferLayout->addWidget(m_clearTransferButton);
+    transferLayout->addWidget(m_chkIgnoreTransferCheckForMvTs);
     transferLayout->addStretch();
 
     leftCol->addWidget(transferBox);
@@ -252,24 +261,24 @@ void MainWindow::buildUi()
             this, &MainWindow::sendLocalCommand);
     connect(m_forceBusyCheck, &QCheckBox::toggled,
             this, &MainWindow::setForcedBusy);
-
     connect(m_busy2sButton, &QPushButton::clicked,
             this, &MainWindow::simulateBusy2s);
-
     connect(m_busy5sButton, &QPushButton::clicked,
             this, &MainWindow::simulateBusy5s);
-
     connect(m_transferManualCheck, &QCheckBox::toggled,
             this, &MainWindow::onTransferManualChanged);
-
     connect(m_loadTransferButton, &QPushButton::clicked,
             this, &MainWindow::onLoadTransferClicked);
-
     connect(m_clearTransferButton, &QPushButton::clicked,
             this, &MainWindow::onClearTransferClicked);
-
+    connect(m_chkIgnoreTransferCheckForMvTs, &QCheckBox::toggled,
+            this, [this](bool on) {
+                m_engine.setIgnoreTransferChecksForMvTs(on);
+                QSettings s("ADRETEK", "Cytomat_Simulator");
+                s.setValue("Simulation/IgnoreTransferCheckForMvTs", on);
+                appendLog("SYS", QString("Ignore transfer check for mv:ts = %1").arg(on ? "ON" : "OFF"));
+            });
 }
-
 
 void MainWindow::onTransferManualChanged(bool checked)
 {
@@ -278,13 +287,11 @@ void MainWindow::onTransferManualChanged(bool checked)
 
 void MainWindow::onLoadTransferClicked()
 {
-
     m_engine.setTransferOccupied(true);
 }
 
 void MainWindow::onClearTransferClicked()
 {
-
     m_engine.setTransferOccupied(false);
 }
 
@@ -345,12 +352,15 @@ void MainWindow::updateFromState()
     m_swapFrontCombo->blockSignals(true);
     m_swapPlate1Check->blockSignals(true);
     m_swapPlate2Check->blockSignals(true);
+    m_transferManualCheck->blockSignals(true);
     m_swapFrontCombo->setCurrentIndex(s.swapFrontPlate == 2 ? 1 : 0);
     m_swapPlate1Check->setChecked(s.swapPlate1Occupied);
     m_swapPlate2Check->setChecked(s.swapPlate2Occupied);
+    m_transferManualCheck->setChecked(s.transferOccupied);
     m_swapFrontCombo->blockSignals(false);
     m_swapPlate1Check->blockSignals(false);
     m_swapPlate2Check->blockSignals(false);
+    m_transferManualCheck->blockSignals(false);
 
     for (int loc = 1; loc <= 200; ++loc)
         updateLocationCell(loc);
@@ -489,18 +499,17 @@ QString MainWindow::handlerPosToString(HandlerPos pos) const
     return "Unknown";
 }
 
-
 void MainWindow::setForcedBusy(bool checked)
 {
-        m_engine.setBusyForced(checked);
+    m_engine.setBusyForced(checked);
 }
 
 void MainWindow::simulateBusy2s()
 {
-        m_engine.simulateBusy(2000);
+    m_engine.simulateBusy(2000);
 }
 
 void MainWindow::simulateBusy5s()
 {
-        m_engine.simulateBusy(5000);
+    m_engine.simulateBusy(5000);
 }

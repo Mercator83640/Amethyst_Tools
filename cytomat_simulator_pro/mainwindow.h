@@ -77,6 +77,7 @@ private:
     QCheckBox* m_transferCheck = nullptr;
     QCheckBox* m_gateCheck = nullptr;
     QCheckBox* m_doorCheck = nullptr;
+    QCheckBox* m_chkIgnoreTransferCheckForMvTs = nullptr;
 
     QLabel* m_warningCodeLabel = nullptr;
     QLabel* m_errorCodeLabel = nullptr;

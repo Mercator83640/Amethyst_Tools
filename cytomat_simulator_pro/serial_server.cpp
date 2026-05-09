@@ -1,5 +1,6 @@
 #include "serial_server.h"
 #include "cytomat_engine.h"
+#include <QDebug>
 
 SerialServer::SerialServer(CytomatEngine* engine, QObject* parent)
     : QObject(parent), m_engine(engine)
@@ -70,13 +71,36 @@ void SerialServer::onReadyRead()
     }
 }
 
+// void SerialServer::writeReply(const QString& reply)
+// {
+//     emit txLine(reply.trimmed());
+
+//     if (!m_serial.isOpen())
+//         return;
+
+//     m_serial.write(reply.toLatin1());
+//     m_serial.flush();
+// }
+
 void SerialServer::writeReply(const QString& reply)
 {
-    emit txLine(reply.trimmed());
-
     if (!m_serial.isOpen())
         return;
 
-    m_serial.write(reply.toLatin1());
-    m_serial.flush();
+    const QByteArray data = reply.toLatin1();
+
+    QTimer::singleShot(30, this, [this, data, reply]() {
+        if (!m_serial.isOpen())
+            return;
+
+        emit txLine(reply.trimmed());
+
+        const qint64 n = m_serial.write(data);
+        qDebug() << "TX delayed real write =" << data
+                 << "HEX=" << data.toHex(' ')
+                 << "written=" << n;
+
+        m_serial.flush();
+        m_serial.waitForBytesWritten(100);
+    });
 }

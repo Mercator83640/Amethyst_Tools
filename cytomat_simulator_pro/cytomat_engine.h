@@ -27,6 +27,8 @@ public:
     bool isBusy() const;
     void setTransferOccupied(bool occupied);
 
+    void setIgnoreTransferChecksForMvTs(bool newIgnoreTransferChecksForMvTs);
+
 signals:
     void stateChanged();
     void traceMessage(const QString& msg);
@@ -72,4 +74,5 @@ private:
     CytomatState m_state;
     QQueue<MotionStep> m_motionQueue;
     QTimer m_motionTimer;
+    bool m_ignoreTransferChecksForMvTs = false;
 };

@@ -75,9 +75,9 @@ void CytomatEngine::setBusyForced(bool busy)
         m_state.actionCode = 0x10;
 
     emit stateChanged();
-    QString msg = QString("ForceBusy=%1 effectiveBusy=%2")
-                      .arg(busy ? "true" : "false")
-                      .arg(isBusy() ? "true" : "false");
+    const QString msg = QString("ForceBusy=%1 effectiveBusy=%2")
+                            .arg(busy ? "true" : "false")
+                            .arg(isBusy() ? "true" : "false");
 
     qDebug() << msg;
 }
@@ -299,6 +299,7 @@ quint8 CytomatEngine::validateMotion(const ParsedCommand& cmd) const
              << "loc=" << cmd.location
              << "transferOccupied=" << m_state.transferOccupied
              << "handlerOccupied=" << m_state.handlerOccupied
+             << "ignoreTransferCheckForMvTs=" << m_ignoreTransferChecksForMvTs
              << "locOccupied=" << (cmd.hasLocation && isValidLocation(cmd.location)
                                        ? m_state.locations[cmd.location]
                                        : false);
@@ -323,7 +324,7 @@ quint8 CytomatEngine::validateMotion(const ParsedCommand& cmd) const
     case CommandType::MvTs:
         if (m_state.handlerOccupied)
             return ERR_HANDLER_OCCUPIED;
-        if (!m_state.transferOccupied)
+        if (!m_ignoreTransferChecksForMvTs && !m_state.transferOccupied)
             return ERR_TRANSFER_EMPTY;
         return 0x00;
 
@@ -407,6 +408,15 @@ void CytomatEngine::setErrorInternal(quint8 code)
     emit stateChanged();
 }
 
+void CytomatEngine::setIgnoreTransferChecksForMvTs(bool on)
+{
+    if (m_ignoreTransferChecksForMvTs == on)
+        return;
+
+    m_ignoreTransferChecksForMvTs = on;
+    emit stateChanged();
+}
+
 void CytomatEngine::setLocationOccupied(int location, bool occupied)
 {
     if (!isValidLocation(location))
@@ -466,7 +476,6 @@ QList<MotionStep> CytomatEngine::buildMvSt(int loc)
              m_state.actionCode = ACT_EXTEND_SHOVEL;
          }},
         {300, [this, loc]() {
-             // La plaque quitte le stockage
              m_state.locations[loc] = false;
              m_state.handlerOccupied = true;
              m_state.handlerPos = HandlerPos::Transfer;
@@ -479,7 +488,6 @@ QList<MotionStep> CytomatEngine::buildMvSt(int loc)
              m_state.actionCode = ACT_MOVE_TRANSFER;
          }},
         {300, [this]() {
-             // Dépose sur transfer station
              m_state.handlerOccupied = false;
              m_state.transferOccupied = true;
              m_state.ready = true;
@@ -504,7 +512,6 @@ QList<MotionStep> CytomatEngine::buildMvTs(int loc)
              m_state.actionCode = ACT_MOVE_TRANSFER;
          }},
         {300, [this]() {
-             // Prise depuis transfer station
              m_state.transferOccupied = false;
              m_state.handlerOccupied = true;
              m_state.handlerPos = HandlerPos::Stacker;
@@ -516,7 +523,6 @@ QList<MotionStep> CytomatEngine::buildMvTs(int loc)
              m_state.actionCode = ACT_EXTEND_SHOVEL;
          }},
         {300, [this, loc]() {
-             // Dépose en stockage
              m_state.locations[loc] = true;
              m_state.handlerOccupied = false;
              m_state.handlerPos = HandlerPos::Wait;
