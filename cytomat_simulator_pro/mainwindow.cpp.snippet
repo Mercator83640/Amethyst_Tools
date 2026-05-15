@@ -1,0 +1,26 @@
+// Add include:
+#include <QCheckBox>
+#include <QSettings>
+
+// In MainWindow constructor, after creating the rest of the UI:
+m_chkIgnoreTransferCheckForMvTs = new QCheckBox(tr("Ignore transfer check for mv:ts (simulation)"), this);
+m_chkIgnoreTransferCheckForMvTs->setChecked(false);
+
+// Add the checkbox to your layout, for example:
+// topLayout->addWidget(m_chkIgnoreTransferCheckForMvTs);
+// or ui->verticalLayout->addWidget(m_chkIgnoreTransferCheckForMvTs);
+
+connect(m_chkIgnoreTransferCheckForMvTs, &QCheckBox::toggled,
+        this, [this](bool on) {
+            m_engine->setIgnoreTransferCheckForMvTs(on);
+            QSettings s("ADRETEK", "Cytomat_Simulator");
+            s.setValue("Simulation/IgnoreTransferCheckForMvTs", on);
+        });
+
+// Restore saved value at startup:
+{
+    QSettings s("ADRETEK", "Cytomat_Simulator");
+    const bool on = s.value("Simulation/IgnoreTransferCheckForMvTs", false).toBool();
+    m_chkIgnoreTransferCheckForMvTs->setChecked(on);
+    m_engine->setIgnoreTransferCheckForMvTs(on);
+}

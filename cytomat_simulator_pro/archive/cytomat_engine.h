@@ -21,7 +21,6 @@ public:
     void injectError(quint8 code);
     void clearError();
     void setLocationOccupied(int location, bool occupied);
-    void setAllLocationsOccupied(bool occupied);
     void setSwapState(int frontPlate, bool plate1Occupied, bool plate2Occupied);
     void resetDemoState();
     void simulateBusy(int durationMs);

@@ -215,6 +215,15 @@ void MainWindow::buildUi()
 
     auto* locationsBox = new QGroupBox("Locations (double click to toggle)", this);
     auto* locationsLayout = new QVBoxLayout(locationsBox);
+
+    auto* nestButtonsLayout = new QHBoxLayout();
+    m_setAllOccupiedButton = new QPushButton("Set All Occupied", this);
+    m_setAllEmptyButton    = new QPushButton("Set All Empty", this);
+    nestButtonsLayout->addWidget(m_setAllOccupiedButton);
+    nestButtonsLayout->addWidget(m_setAllEmptyButton);
+    nestButtonsLayout->addStretch();
+    locationsLayout->addLayout(nestButtonsLayout);
+
     m_locationsTable = new QTableWidget(this);
     m_locationsTable->setRowCount(20);
     m_locationsTable->setColumnCount(10);
@@ -265,6 +274,10 @@ void MainWindow::buildUi()
             this, &MainWindow::simulateBusy2s);
     connect(m_busy5sButton, &QPushButton::clicked,
             this, &MainWindow::simulateBusy5s);
+    connect(m_setAllOccupiedButton, &QPushButton::clicked,
+            this, &MainWindow::setAllNestsOccupied);
+    connect(m_setAllEmptyButton, &QPushButton::clicked,
+            this, &MainWindow::setAllNestsEmpty);
     connect(m_transferManualCheck, &QCheckBox::toggled,
             this, &MainWindow::onTransferManualChanged);
     connect(m_loadTransferButton, &QPushButton::clicked,
@@ -278,6 +291,18 @@ void MainWindow::buildUi()
                 s.setValue("Simulation/IgnoreTransferCheckForMvTs", on);
                 appendLog("SYS", QString("Ignore transfer check for mv:ts = %1").arg(on ? "ON" : "OFF"));
             });
+}
+
+void MainWindow::setAllNestsOccupied()
+{
+    m_engine.setAllLocationsOccupied(true);
+    appendLog("SYS", "All nests set to occupied");
+}
+
+void MainWindow::setAllNestsEmpty()
+{
+    m_engine.setAllLocationsOccupied(false);
+    appendLog("SYS", "All nests set to empty");
 }
 
 void MainWindow::onTransferManualChanged(bool checked)

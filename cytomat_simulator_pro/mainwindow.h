@@ -46,6 +46,8 @@ private slots:
     void onTransferManualChanged(bool checked);
     void onLoadTransferClicked();
     void onClearTransferClicked();
+    void setAllNestsOccupied();
+    void setAllNestsEmpty();
 
 private:
     void buildUi();
@@ -98,6 +100,8 @@ private:
     QCheckBox* m_swapPlate2Check = nullptr;
 
     QTableWidget* m_locationsTable = nullptr;
+    QPushButton* m_setAllOccupiedButton = nullptr;
+    QPushButton* m_setAllEmptyButton = nullptr;
     QPlainTextEdit* m_logEdit = nullptr;
     QPushButton* m_clearLogButton = nullptr;
 
